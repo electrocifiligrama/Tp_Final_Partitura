@@ -22,6 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BPM_detector.py" />
+    <Compile Include="BPM_FFT.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="OSS_generator.py">
       <SubType>Code</SubType>
     </Compile>

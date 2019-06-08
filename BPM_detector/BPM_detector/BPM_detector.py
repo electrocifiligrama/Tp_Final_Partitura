@@ -2,24 +2,39 @@ from scipy.io import wavfile as wav
 from matplotlib import pyplot as plt
 import numpy as np
 import OSS_generator as o_gen
+import BPM_FFT as b
 AUDIO_PATH = ".\\Audios"
 
-file_path = AUDIO_PATH+"\\archer-theme-song.wav"
+file_path = AUDIO_PATH+"\\146_BPM_bumblebee.wav"
 f_s, audio = wav.read(file_path)
 number_of_audios = 1
-if ( (audio.shape)[1] > 1):
+if ( len(audio.shape) > 1):
     number_of_audios = 2
-for i in range(0,1):
-    if i >0:
-        oss_signal += o_gen.GenerateOSS(audio[:,i],f_s)
-        oss_signal /= 2
+chunk_size = 10*44100
+bpm1 = [] #Bpm para el primer audio 
+bpm2 = [] #Bpm del segundo audio (Solo se utiliza para audios en stereo)
+counter = 0
+while counter < len(audio):
+    stop = counter + chunk_size
+    if stop >= len(audio):
+        stop = -1
+    if number_of_audios > 1:
+        for i in range(0,number_of_audios):
+            buffer = audio[counter:stop,i]
+            if i >0:
+                bpm2.append( b.BPM_estimate(buffer,f_s,n_samples=512) )
+            else:
+                bpm1.append( b.BPM_estimate(buffer,f_s,n_samples=512) )
     else:
-        oss_signal = o_gen.GenerateOSS(audio[:,i],f_s)
+        buffer = audio[counter:stop]
+        bpm1.append( b.BPM_estimate(buffer,f_s,n_samples=512) )
+    counter += chunk_size
+
 fig = plt.figure()
 plt.subplot(211)
-t = np.linspace(start=0,stop=(audio.shape[0])/f_s,num=audio.shape[0])
-plt.plot(t,audio[:,0])
-plt.subplot(212)
-t = np.linspace(start=0,stop=len(audio)/f_s,num=len(oss_signal))
-plt.plot(t,oss_signal)
+plt.plot(bpm1)
+if number_of_audios > 1:
+    plt.subplot(212)
+    plt.plot(bpm2)
 plt.show()
+

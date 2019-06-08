@@ -21,7 +21,7 @@ def GenerateOSS(buffer,f_s=44100,window_=None,hop_size=128,n_fft=1024):
         if(stop_index >= buffer_size):
             stop_index=-1
         frame = np.array( buffer[start_index:stop_index] )  #Tomo un numero de muestras del audio
-        if len(frame < window_size):
+        if len(frame) < window_size:
             frame = np.append( frame,np.zeros(int(window_size-frame.size)))
         windowed_frame = np.multiply(frame,window)  #y les aplico la funcion ventana.
         #Le aplico la fft al frame ventaneado
