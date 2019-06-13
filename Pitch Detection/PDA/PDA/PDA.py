@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import peakutils
 from scipy.signal import fftconvolve , find_peaks , decimate
-from scipy.fftpack import rfft , irfft
+from scipy.fftpack import rfft , irfft , ifftshift
 from collections import deque
+import os
 
 # MEJORAS:
-# mejorar algoritmo optimize note
-# ver de implementar alguno en un Wav
+# implementar diff con fft
 
 def sgn(data):
     # determino threshold
@@ -64,10 +64,10 @@ def autocorrelationAlgorithm(noteData,fs,frames = 3000, clippingStage = "False")
     # busco primer maximo
     max = 0.3*np.amax(correlation)
     peaks = find_peaks(correlation,max, distance = 21)
-#    for i in range(0,len(peaks[0])):
-#        plt.plot(peaks[0][i], correlation[peaks[0][i]], 'ro')
-#    plt.plot(correlation)
-#    plt.show()
+    #for i in range(0,len(peaks[0])):
+    #    plt.plot(peaks[0][i], correlation[peaks[0][i]], 'ro')
+    #plt.plot(correlation)
+    #plt.show()
     if len(peaks[0]) > 0:
         xMax = peaks[0][0]
     else:
@@ -130,15 +130,35 @@ def cepstrum(noteData,fs,frames = 3000):
     plt.show()
     return
 
-def differenceFunction(data,tauMax,fs): # ver de implementar forma con fft
-    diff = np.array([], dtype=np.float64)
-    t = int(fs*tauMax)
-    for i in range(1,t):
-        sum = np.float64(0)
-        for j in range(0,len(data)-t):
-            aux = (data[j]-data[j+i])**2
-            sum += aux
-        diff = np.append(diff,sum)
+def fftxcorr(data):
+    xp = ifftshift((data - np.average(data))/np.std(data))
+    n, = xp.shape
+    xp = np.r_[xp[:n//2], np.zeros_like(xp), xp[n//2:]]
+    fftArray = rfft(xp) # aplico fft
+    Sxx = np.absolute(fftArray)**2  # convierto a densidad espectral
+    xcorr = irfft(Sxx) # antitransformo
+    return xcorr
+
+def differenceFunction(data,tauMax,fs,form = 'fft'):
+    diff = np.array([], dtype=np.int64)
+    data = np.array(data,dtype=np.int64)
+    if form == 'fft':
+        r0 = fftxcorr(data)
+#        plt.plot(r0)
+#        plt.show()
+        for i in range(1,len(data)):
+            rTau = fftxcorr(data[i:len(data)]) #???
+            auxDiff = r0[0]-2*r0[i]-rTau[0]
+            np.append(diff,auxDiff)
+    elif form == 'cumsum':
+        t = int(fs*tauMax)
+        for i in range(1,t):
+            sum = np.int64(0)
+            aux = np.int64(0)
+            for j in range(0,len(data)-t):
+                aux = (data[j]-data[j+i])**2
+                sum += aux
+            diff = np.append(diff,sum)
     return diff
 
 def CMDF(diff): # cumulative mean normalized difference function
@@ -148,11 +168,14 @@ def CMDF(diff): # cumulative mean normalized difference function
         sum = 0
         for j in range(1,i):
             sum += diff[j]
-        aux=(i*diff[i])/sum
+        if sum !=0:
+            aux=(i*diff[i])/sum
+        else:
+            aux = (i*diff[i])/(10**(-10))
         cmdf.append(aux)
     return cmdf
 
-def selectFoSample(cmdf,th = 0.13):
+def selectFoSample(cmdf,th):
     sample = 0
     invCmdf = np.multiply(-1,cmdf)
     peaks = find_peaks(invCmdf,-th)
@@ -160,16 +183,16 @@ def selectFoSample(cmdf,th = 0.13):
         sample = peaks[0][0]
     return sample
 
-def YIN(noteData,fs,frames= 1470*2):
+def YIN(noteData,fs,tauMax = 1/40,frames= 1470*2,form = 'cumsum',th = 0.13):
     fo = 0
-    noteData = optimizeNote(noteData,frames)
-    diff = differenceFunction(noteData,1/40,fs)
+    #noteData = optimizeNote(noteData,frames)
+    diff = differenceFunction(noteData,tauMax,fs,form)
     #plt.plot(diff)
     #plt.show()
     cmdf = CMDF(diff) # ver lo de division por cero
     #plt.plot(cmdf)
     #plt.show()
-    n = selectFoSample(cmdf)
+    n = selectFoSample(cmdf,th)
     if n>0:
         fo = fs/n
     else: 
@@ -177,5 +200,44 @@ def YIN(noteData,fs,frames= 1470*2):
     return fo
 
 def freqToPitch(freq):
-    return round(12*np.log2(freq/440)+69)
+    pitch = 0
+    if freq != 0:
+        pitch = round(12*np.log2(freq/440)+69)
+    return pitch
+
+def getWavPitch(audio, fs, wLen=4096, wStep=2048, fMin= 40):
+    """
+    Obtiene pitch de un audio
+
+    :param audio: Audio signal (list of float) sig == audio
+    :param fs: sampling rate (int) sr == fs
+    :param wLen: size of the analysis window (samples)
+    :param wStep: size of the lag between two consecutives windows (samples)
+    :param fMin: Minimum fundamental frequency that can be detected (hertz) f0_min == fMin
+
+    :returns:
+        * pitches: arreglo con los pitches correspondientes a cada tiempo
+        * times: tiempos a los cuales refiere la estimacion de pitch (en samples)
+    """
+
+    timeScale = range(0, len(audio) - wStep, wStep)  # valores para ventanas para analisis 
+    times = [t for t in timeScale] # guardo arreglo con tiempos del audio divido por fs para tener tiempos reales
+    frames = [audio[t:t + wLen] for t in timeScale] # intervalos a los cuales aplicarle el algoritmo de largo wLen
+
+    pitches = [] # donde voy a guardar cada pitch detectado
+    max = np.amax(audio) # maximo valor del audio
+
+    for i, frame in enumerate(frames):
+        # LLamo a algoritmo de deteccion
+        if np.amax(frame) > 0.09*max: # hay nota en el frame
+            fAux = autocorrelationAlgorithm(frame,fs,5000,'True')
+        else:
+            fAux = 0
+        if fAux <= (fs/2):
+            pitches.append(fAux)
+        else:
+            pitches.append(0)
+        os.system('cls')
+        print("%s frames of %s finished" % (i+1,len(frames)))
+    return pitches, times
 
