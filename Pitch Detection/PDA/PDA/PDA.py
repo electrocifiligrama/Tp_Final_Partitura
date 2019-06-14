@@ -11,7 +11,15 @@ import os
 
 def sgn(data):
     # determino threshold
-    max = np.amax(data)
+    length = len(data)
+    firstThird = round(len(data)/3)
+    lastThird = round(len(data)/1.5)
+    auxData1 = data[:firstThird]
+    auxData2 = data[lastThird:]
+    max1 = np.amax(auxData1)
+    max2 = np.amax(auxData2)
+    max = min(max1,max2)
+    #max = np.amax(data)
     Cl = 0.68*max
     # aplico transformacion
     data = np.array(data)
@@ -66,10 +74,10 @@ def autocorrelationAlgorithm(noteData,fs,frames = 3000, clippingStage = "False")
     peaks = find_peaks(correlation,max, distance = 21)
     for i in range(0,len(peaks[0])):
         plt.plot(peaks[0][i], correlation[peaks[0][i]], 'ro')
-    plt.plot(correlation)
-    plt.xlabel("Samples [n/fs]")
-    plt.ylabel("Amplitud")
-    plt.show()
+    #plt.plot(correlation)
+    #plt.xlabel("Samples [n/fs]")
+    #plt.ylabel("Amplitud")
+    #plt.show()
     if len(peaks[0]) > 0:
         xMax = peaks[0][0]
     else:
