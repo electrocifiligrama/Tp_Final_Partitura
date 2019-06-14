@@ -64,10 +64,12 @@ def autocorrelationAlgorithm(noteData,fs,frames = 3000, clippingStage = "False")
     # busco primer maximo
     max = 0.3*np.amax(correlation)
     peaks = find_peaks(correlation,max, distance = 21)
-    #for i in range(0,len(peaks[0])):
-    #    plt.plot(peaks[0][i], correlation[peaks[0][i]], 'ro')
-    #plt.plot(correlation)
-    #plt.show()
+    for i in range(0,len(peaks[0])):
+        plt.plot(peaks[0][i], correlation[peaks[0][i]], 'ro')
+    plt.plot(correlation)
+    plt.xlabel("Samples [n/fs]")
+    plt.ylabel("Amplitud")
+    plt.show()
     if len(peaks[0]) > 0:
         xMax = peaks[0][0]
     else:
@@ -113,8 +115,10 @@ def harmonicProductSpectrum(noteData,fs,frames = 20000,hNro = 7):
     for i in range(0,index):
         hpsArray[i] = 0
     # busco frecuencia del maximo de la nueva funcion
-    #plt.plot(hpsArray)
-    #plt.show()
+    plt.plot(fftF,hpsArray)
+    plt.xlabel("frequency [HZ]")
+    plt.ylabel("Amplitud")
+    plt.show()
     fo = fftF[np.argmax(hpsArray)]
     return fo
 
@@ -185,13 +189,13 @@ def selectFoSample(cmdf,th):
 
 def YIN(noteData,fs,tauMax = 1/40,frames= 1470*2,form = 'cumsum',th = 0.13):
     fo = 0
-    #noteData = optimizeNote(noteData,frames)
+    noteData = optimizeNote(noteData,frames)
     diff = differenceFunction(noteData,tauMax,fs,form)
-    #plt.plot(diff)
-    #plt.show()
+    plt.plot(diff)
+    plt.show()
     cmdf = CMDF(diff) # ver lo de division por cero
-    #plt.plot(cmdf)
-    #plt.show()
+    plt.plot(cmdf)
+    plt.show()
     n = selectFoSample(cmdf,th)
     if n>0:
         fo = fs/n
@@ -231,6 +235,8 @@ def getWavPitch(audio, fs, wLen=4096, wStep=2048, fMin= 40):
         # LLamo a algoritmo de deteccion
         if np.amax(frame) > 0.09*max: # hay nota en el frame
             fAux = autocorrelationAlgorithm(frame,fs,5000,'True')
+            #fAux = harmonicProductSpectrum(frame,fs,20000)
+            #fAux = YIN(frame,fs,1/40,5000)
         else:
             fAux = 0
         if fAux <= (fs/2):
@@ -239,5 +245,12 @@ def getWavPitch(audio, fs, wLen=4096, wStep=2048, fMin= 40):
             pitches.append(0)
         os.system('cls')
         print("%s frames of %s finished" % (i+1,len(frames)))
+    for i in range(0,len(pitches)):
+        pitches[i] = freqToPitch(pitches[i])
+    for i in range(1,len(pitches)-1):
+        if pitches[i-1] == pitches[i+1] and pitches[i] != pitches[i-1]:
+            pitches[i] = pitches[i-1]
+        elif pitches[i-1] != pitches[i+1] and pitches[i] != pitches[i-1] and pitches[i] != pitches[i+1]:
+            pitches[i] = pitches[i-1]
     return pitches, times
 

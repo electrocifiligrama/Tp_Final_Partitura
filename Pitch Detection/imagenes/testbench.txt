@@ -1,0 +1,82 @@
+Algorithm Testbench:
+
+Instrument: saxophone_B3
+Real: ~247 Hz - 59.0 MIDI
+Autocorrelation: 251.0 Hz - 59.0 MIDI
+Clipped Autocorrelation: 251.0 Hz - 59.0 MIDI
+HPS: 251.0 Hz - 59.0 MIDI
+YIN: 252.0 Hz - 59.0 MIDI
+
+Instrument: guitar_G3
+Real: ~195 Hz - 55.0 MIDI
+Autocorrelation: 195.0 Hz - 55.0 MIDI
+Clipped Autocorrelation: 196.0 Hz - 55.0 MIDI
+HPS: 196.0 Hz - 55.0 MIDI
+YIN: 195.0 Hz - 55.0 MIDI
+
+Instrument: trumpet_A4
+Real: ~440 Hz - 69.0 MIDI
+Autocorrelation: 441.0 Hz - 69.0 MIDI
+Clipped Autocorrelation: 441.0 Hz - 69.0 MIDI
+HPS: 443.0 Hz - 69.0 MIDI
+YIN: 445.0 Hz - 69.0 MIDI
+
+Instrument: violin_A4
+Real: ~440 Hz - 69.0 MIDI
+Autocorrelation: 437.0 Hz - 69.0 MIDI
+Clipped Autocorrelation: 437.0 Hz - 69.0 MIDI
+HPS: 438.0 Hz - 69.0 MIDI
+YIN: 441.0 Hz - 69.0 MIDI
+
+Instrument: cello_As2
+Real: ~117 Hz - 46.0 MIDI
+Autocorrelation: 116.0 Hz - 46.0 MIDI
+Clipped Autocorrelation: 116.0 Hz - 46.0 MIDI
+HPS: 116.0 Hz - 46.0 MIDI
+YIN: 117.0 Hz - 46.0 MIDI
+
+Instrument: flute_G5
+Real: ~784 Hz - 79.0 MIDI
+Autocorrelation: 788.0 Hz - 79.0 MIDI
+Clipped Autocorrelation: 788.0 Hz - 79.0 MIDI
+HPS: 788.0 Hz - 79.0 MIDI
+YIN: 802.0 Hz - 79.0 MIDI
+
+Instrument: oboe_E5
+Real: ~659 Hz - 76.0 MIDI
+Autocorrelation: 1336.0 Hz - 88.0 MIDI
+Clipped Autocorrelation: 658.0 Hz - 76.0 MIDI
+HPS: 663.0 Hz - 76.0 MIDI
+YIN: 668.0 Hz - 76.0 MIDI
+
+Instrument: banjo_E6
+Real: ~1319 Hz - 88.0 MIDI
+Autocorrelation: 1297.0 Hz - 88.0 MIDI
+Clipped Autocorrelation: 1297.0 Hz - 88.0 MIDI
+HPS: 1295.0 Hz - 88.0 MIDI
+YIN: 1336.0 Hz - 88.0 MIDI
+
+Instrument: bass-clarinet_F5
+Real: ~698 Hz - 77.0 MIDI
+Autocorrelation: 1102.0 Hz - 85.0 MIDI
+Clipped Autocorrelation: 700.0 Hz - 77.0 MIDI
+HPS: 706.0 Hz - 77.0 MIDI
+YIN: 689.0 Hz - 77.0 MIDI
+
+Instrument: tuba_A1
+Real: ~55 Hz - 33.0 MIDI
+Autocorrelation: 327.0 Hz - 64.0 MIDI
+Clipped Autocorrelation: 54.0 Hz - 33.0 MIDI
+HPS: 54.0 Hz - 33.0 MIDI
+YIN: 54.0 Hz - 33.0 MIDI
+
+Instrument: pianoChord_C4
+Real: ~262 Hz - 60.0 MIDI
+Autocorrelation: 160.0 Hz - 51.0 MIDI
+Clipped Autocorrelation: 33.0 Hz - 24.0 MIDI
+HPS: 65.0 Hz - 36.0 MIDI
+YIN: 48000 Hz - 150.0 MIDI
+
+
+
+
