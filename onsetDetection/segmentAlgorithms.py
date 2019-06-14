@@ -3,15 +3,27 @@
 import numpy as np
 import math
 import scipy.signal as signal 
+import matplotlib.pyplot as plt
 
 #FUNCION GENERAL
 
 def notesSegmentation(dataIn, fs, algorithm):
-    f, timeRes = algorithm(dataIn, fs)
-    detectionFunction = soft(f, 4) #orden 4 de decimación e interpolación
-    onsets = onsetDetection(detectionFunction)
-    offsets = offsetDetection(detectionFunction, onsets)
+    f, timeRes, thOn, thOff, softOrder = algorithm(dataIn, fs)
+    detectionFunction = soft(f, softOrder) #orden 4 de decimación e interpolación
+    adaptativeThresh = calculateThreshold(detectionFunction, timeRes, thOn)
+    onsets = onsetDetection(detectionFunction, thOn)
+    offsets = offsetDetection(detectionFunction, onsets, thOff)
     segmentsOnOff = generateSegments(onsets, offsets, timeRes, fs)
+    x = np.linspace(0, len(dataIn), len(dataIn))
+    xAux = np.linspace(0, len(detectionFunction)*timeRes, len(detectionFunction))
+    x2Aux = np.linspace(onsets[0]*timeRes, onsets[-1]*timeRes, len(onsets))
+    plt.figure()
+    plt.subplot(211)
+    plt.plot(x, dataIn)
+    plt.subplot(212)
+
+    plt.plot(xAux, detectionFunction)
+    plt.plot(onsets*timeRes, detectionFunction[onsets], 'x')
 
     return segmentsOnOff
 
@@ -19,7 +31,7 @@ def notesSegmentation(dataIn, fs, algorithm):
 
 def HFC(bufferIn,f_s=44100):
     
-    k, n, Snn = signal.spectrogram(bufferIn, f_s, nperseg=512)
+    k, n, Snn = signal.spectrogram(bufferIn, f_s, nperseg=1024, nfft = 1024)
     Nbins = len(k)
     Ntimes = len(n)
     timeRes = n[-1]/Ntimes
@@ -29,8 +41,12 @@ def HFC(bufferIn,f_s=44100):
         for j in range(0, Nbins-1):
             En[i] += (j*Snn[j, i])
         En[i] /= Nbins
- 
-    return En, timeRes
+
+    thOn = 2500
+    thOff = 800
+    softOrder = 2
+
+    return En, timeRes, thOn, thOff, softOrder
 
 
 def spectralDiff(bufferIn, f_s):
@@ -44,7 +60,11 @@ def spectralDiff(bufferIn, f_s):
     for i in range(1, Ntimes-1):
         for j in range(0, Nbins-1):
             SD[i] += ((Hx(Snn[j, i] - Snn[j, i-1]))**2)
-    return SD, timeRes
+
+    thOn = 1000
+    thOff = 20
+    softOrder = 2
+    return SD, timeRes, thOn, thOff, softOrder
 
 def CDC(bufferIn,f_s=44100):
     
@@ -52,13 +72,13 @@ def CDC(bufferIn,f_s=44100):
 
 #FUNCIONES DE DETECCIÓN DE ONSET
 
-def onsetDetection(detectionFunction):
-    peaks, _ = signal.find_peaks(detectionFunction, height = 0, threshold= 10)
+def onsetDetection(detectionFunction, thOn):
+    peaks, _ = signal.find_peaks(detectionFunction, height = 0, threshold= 10, distance = 13)
     NfalsePositives = 0
-    thresholdOn = 1500
+    thresholdOn = thOn
     #cuento la cantidad de falsos positivos
     for i in range(0, len(peaks)):
-        if detectionFunction[peaks[i]] > thresholdOn:
+        if detectionFunction[peaks[i]] < thresholdOn:
             NfalsePositives += 1
 
     #creo vector que NO tenga en cuenta los falsos positivos
@@ -76,9 +96,9 @@ def onsetDetection(detectionFunction):
 
 #FUNCIONES DE DETECCIÓN DE OFFSET
 
-def offsetDetection(detectionFunction, onsets):
+def offsetDetection(detectionFunction, onsets, thOff):
     offsets = np.zeros(len(onsets), dtype = int)
-    thresholdOff = 400
+    thresholdOff = thOff
     isOffsetDetected = False #genero flag para saber si se detecta offset o llega una nota antes de que la anterior se termine
 
     for i in range(0, len(onsets)): #utilizo todos los onsets para hallar los offsets
@@ -132,6 +152,11 @@ def soft(dataIn, nOrden):
         return dataUp
     else:
         return dataIn
+
+def calculateThreshold(detectionFunction, timeRes, thInit):
+    thAdaptative = thInit
+    return thAdaptative
+
     
     
     

@@ -4,14 +4,12 @@ from scipy.io import wavfile as wav
 import segmentAlgorithms as SDA
 import PDA as PDA
 import OSS_generator as tempo #esto probablemente haya que cambiarlo
-import numpy as np
-
-import matplotlib.pyplot as plt
+import frontend as front
 
 #obtengo el audio monofónico
 AUDIO_PATH = ".\\Audios"
 
-filePath = AUDIO_PATH + "\\doMIsolDO.wav"  
+filePath = AUDIO_PATH + "\\punteoSongPiano.wav"  
 fs, audio = wav.read(filePath)
 audioMono = audio[:, 1]
 
@@ -21,10 +19,14 @@ audioMono = audio[:, 1]
 noteSegments = SDA.notesSegmentation(audioMono, fs, SDA.HFC)
 
 #Se averigua el pitch de las notas de cada intervalo hallado
-notesFo = PDA.assignPitch(audioMono, fs, noteSegments, PDA.YIN)
+notesFo = PDA.assignPitch(audioMono, fs, noteSegments, PDA.autocorrelationAlgorithm)
 
+#A partir de la frecuencia fundamental de cada nota se averigua el nombre de las mismas 
+notesName = PDA.translateNotes(notesFo)
 
-print(notesFo)
+#Se muestran gráficamente el resultado
+front.showResults(notesName, noteSegments, audioMono)
+
 
 
 

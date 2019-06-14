@@ -42,7 +42,7 @@ def optimizeNote(noteData,frames):
 
 # Si no encuentra frecuencia fundamental, devuelve fo = 44100
 # Cuanto mas grande noteData mejor la aproximacion a la fpitch (aprox 3000 minimo)
-def autocorrelationAlgorithm(noteData,fs,frames = 3000, clippingStage = "False"):
+def autocorrelationAlgorithm(noteData,fs,frames = 5000, clippingStage = "True"):
     fo = 0
     # selecciono mejor parte de la nota
     #plt.figure(1)
@@ -63,8 +63,6 @@ def autocorrelationAlgorithm(noteData,fs,frames = 3000, clippingStage = "False")
     # busco primer maximo
     max = 0.3*np.amax(correlation)
     peaks = find_peaks(correlation,max, distance = 21)
-    for i in range(0,len(peaks[0])):
-        plt.plot(peaks[0][i], correlation[peaks[0][i]], 'ro')
 
     if len(peaks[0]) > 0:
         xMax = peaks[0][0]
@@ -243,14 +241,46 @@ def getWavPitch(audio, fs, wLen=4096, wStep=2048, fMin= 40):
 
 def assignPitch(dataIn, fs, segments, algorithm):
     Nnotes = len(segments[:])
-    print(Nnotes)
-    notesFo = np.zeros(Nnotes)
-    print(segments)
-    print(notesFo)
+    notesFo = np.zeros(Nnotes, dtype = int)
     for i in range(0, Nnotes):
-        print(i)
-        notesFo[i] = algorithm(dataIn[segments[i][0] : segments[i][1]], fs)
+        notesFo[i] = freqToPitch(algorithm(dataIn[segments[i][0] : segments[i][1]], fs))
 
     return notesFo
+
+def translateNotes(notesFo):
+    midiKeyBegin = 21
+
+    notesTable = ["A0", "A0#", "B0", "C1", "C1#", "D1", "D1#", "E1", "E1#", "F1", "G1", "G1#", 
+                  "A1", "A1#", "B1", "C2", "C2#", "D2", "D2#", "E2", "E2#", "F2", "G2", "G2#",
+                  "A2", "A2#", "B2", "C3", "C3#", "D3", "D3#", "E3", "E3#", "F3", "G3", "G3#",
+                  "A3", "A3#", "B3", "C4", "C4#", "D4", "D4#", "E4", "E4#", "F4", "G4", "G4#",
+                  "A4", "A4#", "B4", "C5", "C5#", "D5", "D5#", "E5", "E5#", "F5", "G5", "G5#",
+                  "A5", "A5#", "B5", "C6", "C6#", "D6", "D6#", "E6", "E6#", "F6", "G6", "G6#",
+                  "A6", "A6#", "B6", "C7", "C7#", "D7", "D7#", "E7", "E7#", "F7", "G7", "G7#",
+                  "A7", "A7#", "B7", "C8", "C8#", "D8", "D8#", "E8", "E8#", "F8", "G8", "G8#",]
+
+    Nnotes = len(notesFo)
+
+    notesTranslated = [] #Se crea una lista para las notas traducidas
+
+    for i in range(0, Nnotes):
+        if isValidMidiKey(notesFo[i]):
+            notesTranslated.append(notesTable[notesFo[i] - midiKeyBegin])
+        else:
+            notesTranslated.append("unKnownPitch")
+    
+    notesTranslatedArray = np.asarray(notesTranslated)
+
+    return notesTranslatedArray
+
+def isValidMidiKey(midiKey):
+    ret = False
+    if (midiKey < 109 and midiKey > 20):
+        ret = True
+    
+    return ret
+        
+
+
 
 
