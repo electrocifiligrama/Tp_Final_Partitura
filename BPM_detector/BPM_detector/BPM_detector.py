@@ -6,14 +6,14 @@ import BPM_FFT as b
 from scipy import stats
 AUDIO_PATH = ".\\Audios"
 
-file_path = AUDIO_PATH+"\\87_BPM_Monk.wav"
+file_path = AUDIO_PATH+"\\06-RunToTheHills.wav"
 f_s, audio = wav.read(file_path)
 number_of_audios = 1
 if ( len(audio.shape) > 1):
     number_of_audios = 2
 samples = 280
 chunk_size = 2048*samples
-alpha = 0.85
+alpha = 0.8
 bpm1 = [] #Bpm para el primer audio 
 bpm2 = [] #Bpm del segundo audio (Solo se utiliza para audios en stereo)
 counter = 0
@@ -23,13 +23,13 @@ while counter < len(audio):
         stop = -1
     if number_of_audios > 1:
         for i in range(0,number_of_audios):
-            buffer = audio[counter:stop,i]
+            buffer =  audio[counter:stop,i] 
             if i >0:
                 bpm2.append( b.BPM_estimate(buffer,f_s,samples,alpha) )
             else:
                 bpm1.append( b.BPM_estimate(buffer,f_s,samples,alpha) )
     else:
-        buffer = audio[counter:stop]
+        buffer =  audio[counter:stop] 
         bpm1.append( b.BPM_estimate(buffer,f_s,samples,alpha) )
     counter += chunk_size
 
