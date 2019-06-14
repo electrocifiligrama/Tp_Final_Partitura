@@ -268,6 +268,7 @@ def translateNotes(notesFo):
             notesTranslated.append(notesTable[notesFo[i] - midiKeyBegin])
         else:
             notesTranslated.append("unKnownPitch")
+            
     
     notesTranslatedArray = np.asarray(notesTranslated)
 

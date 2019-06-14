@@ -43,7 +43,7 @@ def HFC(bufferIn,f_s=44100):
         En[i] /= Nbins
 
     thOn = 2500
-    thOff = 800
+    thOff = 600
     softOrder = 2
 
     return En, timeRes, thOn, thOff, softOrder

@@ -9,7 +9,7 @@ import frontend as front
 #obtengo el audio monofónico
 AUDIO_PATH = ".\\Audios"
 
-filePath = AUDIO_PATH + "\\punteoSongPiano.wav"  
+filePath = AUDIO_PATH + "\\kissSongPiano.wav"  
 fs, audio = wav.read(filePath)
 audioMono = audio[:, 1]
 
