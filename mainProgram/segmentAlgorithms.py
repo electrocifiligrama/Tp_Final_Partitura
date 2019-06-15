@@ -10,7 +10,7 @@ import scipy.signal as signal
 def notesSegmentation(dataIn, fs, algorithm):
     f, timeRes, thOn, thOff, softOrder = algorithm(dataIn, fs)
     detectionFunction = f
-    #soft(f, softOrder) #orden 4 de decimación e interpolación
+    soft(f, softOrder) #orden 4 de decimación e interpolación
     adaptativeThresh = calculateThreshold(detectionFunction, timeRes, thOn)
     onsets = onsetDetection(detectionFunction, thOn)
     offsets = offsetDetection(detectionFunction, onsets, thOff)
