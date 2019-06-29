@@ -24,11 +24,12 @@ class MidiBuilder:
         print(self.curr_pat)
         midi.write_midifile(name+".mid", self.curr_pat)
 
-    def change_tempo(self, new_tempo):
+    def change_tempo(self, new_tempo, changed_tempo_time=0):
         self.curr_tempo = new_tempo
         temp_ev = midi.SetTempoEvent()
         temp_ev.set_bpm(self.curr_tempo)
         self.curr_track.append(temp_ev)
+        self.last_ev_time += changed_tempo_time
 
     def play_note(self, on_time, off_time, pitch, pressure=100):
         secs_per_tick = 60 / self.curr_tempo / self.resolution
@@ -37,11 +38,13 @@ class MidiBuilder:
 
         self.curr_track.append(midi.NoteOnEvent(tick=on_tick, velocity=pressure, pitch=pitch))
         self.curr_track.append(midi.NoteOffEvent(tick=off_tick, pitch=pitch))
+        self.last_ev_time = off_time
 
-
+# Muestro como usar
 midi_filer = MidiBuilder(1000)
 midi_filer.create_midi()
 midi_filer.change_tempo(120)
 midi_filer.play_note(on_time=2, off_time=3, pitch=midi.G_3)
+midi_filer.play_note(on_time=4, off_time=6, pitch=midi.A_3)
 midi_filer.end_midi('NuevoTrack')
 
