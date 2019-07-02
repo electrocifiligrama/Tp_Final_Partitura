@@ -1,5 +1,7 @@
 import midi
 
+MIDI_PATH = ".\\Midis"
+
 
 class MidiBuilder:
 
@@ -10,6 +12,7 @@ class MidiBuilder:
         self.curr_track = None
         self.curr_tempo = 120
         self.last_ev_time = 0
+        self.create_midi()
 
     def set_resolution(self, new_resolution):
         self.resolution = new_resolution
@@ -20,9 +23,9 @@ class MidiBuilder:
         self.curr_pat.append(self.curr_track)
 
     def end_midi(self, name):
+        name = MIDI_PATH + "\\" + name
         self.curr_track.append(midi.EndOfTrackEvent(tick=1))
-        print(self.curr_pat)
-        midi.write_midifile(name+".mid", self.curr_pat)
+        midi.write_midifile(name + ".mid", self.curr_pat)
 
     def change_tempo(self, new_tempo, changed_tempo_time=0):
         self.curr_tempo = new_tempo
@@ -40,11 +43,16 @@ class MidiBuilder:
         self.curr_track.append(midi.NoteOffEvent(tick=off_tick, pitch=pitch))
         self.last_ev_time = off_time
 
+    def play_notes(self, note_segments, fs, notes_fo, name):
+        for i in range(len(note_segments)):
+            self.play_note(note_segments[i][0]/fs, note_segments[i][1]/fs, notes_fo[i])
+        self.end_midi(name)
+
 # Muestro como usar
-midi_filer = MidiBuilder(1000)
-midi_filer.create_midi()
-midi_filer.change_tempo(120)
-midi_filer.play_note(on_time=2, off_time=3, pitch=midi.G_3)
-midi_filer.play_note(on_time=4, off_time=6, pitch=midi.A_3)
-midi_filer.end_midi('NuevoTrack')
+# midi_filer = MidiBuilder(1000)
+# midi_filer.create_midi()
+# midi_filer.change_tempo(120)
+# midi_filer.play_note(on_time=2, off_time=3, pitch=midi.G_3)
+# midi_filer.play_note(on_time=4, off_time=6, pitch=midi.A_3)
+# midi_filer.end_midi('NuevoTrack')
 
