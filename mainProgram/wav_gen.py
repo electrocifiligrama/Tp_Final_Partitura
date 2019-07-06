@@ -12,8 +12,7 @@ class WaveManagement:
     # https://soledadpenades.com/posts/2009/fastest-way-to-generate-wav-files-in-python-using-the-wave-module/
     def generate_wav(self, finished: bool, data: list, n_channels: int = 1, sample_width=2, frame_rate=44100, file_name='NEW_WAV.wav'):
         """generate_wav generates a new .wav file based on the input data.
-    #The amplitude of each data sample should be a float belonging to the interval [-1,1],
-    #where 1 will be the maximum representable number on the wav file."""
+    #The amplitude of each data sample should be a float belonging to the interval [-2^15-1,2^15-1]"""
         if self.opened_file is None:
             self.opened_file = wave.open(file_name, 'wb')
             self.opened_file.setparams((n_channels, sample_width, frame_rate, len(data), 'NONE', 'not compressed'))

@@ -9,13 +9,14 @@ from midiBuilder import MidiBuilder
 
 # obtengo el audio monofónico
 AUDIO_PATH = ".\\Audios"
+INSTRUMENT = 1      # Grand Piano -- despues habria que agregar un diccionario si hace falta
 fileName = "punteoSongPiano"
 filePath = AUDIO_PATH + "\\" + fileName + ".wav"
 
 fs, audio = wav.read(filePath)
 audioMono = audio[:, 1]
 
-midi_filer = MidiBuilder(1000)
+midi_filer = MidiBuilder(1000, INSTRUMENT)
 
 # tempo.detect(audioMono, fs)
 

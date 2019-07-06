@@ -5,7 +5,7 @@ MIDI_PATH = ".\\Midis"
 
 class MidiBuilder:
 
-    def __init__(self, resolution):
+    def __init__(self, resolution, instrument):
         self.resolution = resolution
         self.playing_notes = []
         self.curr_pat = None
@@ -13,9 +13,17 @@ class MidiBuilder:
         self.curr_tempo = 120
         self.last_ev_time = 0
         self.create_midi()
+        self.instrument = instrument
+        self.set_instrument(instrument)
 
     def set_resolution(self, new_resolution):
         self.resolution = new_resolution
+
+    def set_instrument(self, instrument):
+        self.instrument = instrument
+        inst = midi.ProgramChangeEvent()
+        inst.set_value(instrument)
+        self.curr_track.append(inst)
 
     def create_midi(self):
         self.curr_pat = midi.Pattern(tracks=[], resolution=self.resolution, format=1, tick_relative=True)
@@ -50,7 +58,6 @@ class MidiBuilder:
 
 # Muestro como usar
 # midi_filer = MidiBuilder(1000)
-# midi_filer.create_midi()
 # midi_filer.change_tempo(120)
 # midi_filer.play_note(on_time=2, off_time=3, pitch=midi.G_3)
 # midi_filer.play_note(on_time=4, off_time=6, pitch=midi.A_3)
