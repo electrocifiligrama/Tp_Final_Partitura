@@ -3,6 +3,13 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
+#Defines
+CREATE_MIDI = 1
+SYNTHESIZE_WAV = 2
+SPECTROGRAM = 3
+HARMONIC_PERCUSSIVE = 4
+
+
 def showResults(notesName, noteSegments, audioMono):
     frames = np.arange(0, len(audioMono), 1)
     plt.figure()

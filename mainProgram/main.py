@@ -6,9 +6,31 @@ import PDA as PDA
 import OSS_generator as tempo #esto probablemente haya que cambiarlo
 import frontend as front
 from midiBuilder import MidiBuilder
+#Funciones del main
+def synthesize_wav():
+    return
+def spectrogram():
+    return
+def create_midi():
+    return
+def separate_harmonic_percussive():
+    return
 
 front.PrintInstructions()
 selected_option = input()
+#Realizo la accion correspondiente al input del usuario
+if(selected_option == front.CREATE_MIDI):
+    create_midi()
+elif( front.SYNTHESIZE_WAV):
+    synthesize_wav()
+elif( front.SPECTROGRAM):
+    spectrogram()
+elif( front.HARMONIC_PERCUSSIVE):
+    separate_harmonic_percussive()
+else:
+    #caso indefinido
+    print("Opcion invalida\n")
+
 print(selected_option)
 # obtengo el audio monofónico
 AUDIO_PATH = ".\\Audios"
@@ -37,6 +59,8 @@ midi_filer.play_notes(noteSegments, fs, notesFo, fileName)
 
 # Se muestran gráficamente el resultado
 front.showResults(notesName, noteSegments, audioMono)
+
+
 
 
 
