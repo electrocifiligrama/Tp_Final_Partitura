@@ -7,6 +7,9 @@ import OSS_generator as tempo #esto probablemente haya que cambiarlo
 import frontend as front
 from midiBuilder import MidiBuilder
 
+front.PrintInstructions()
+selected_option = input()
+print(selected_option)
 # obtengo el audio monofónico
 AUDIO_PATH = ".\\Audios"
 INSTRUMENT = 1      # Grand Piano -- despues habria que agregar un diccionario si hace falta

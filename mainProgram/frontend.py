@@ -19,5 +19,15 @@ def showResults(notesName, noteSegments, audioMono):
 
     plt.show()
     
+def PrintInstructions():
+    print("El siguiente programa tiene distintas funcionalidades todas relacionadas a la manipulacion de archivos\n")
+    print("de audio .wav como de archivos MIDI.\n")
+    print("Eliga la opcion deseada apretando en el terclado el numero que precede a la misma:")
+    #Listado de opciones que realiza el programa
+    print("1) Obtener el midi a partir de un .wav\n")
+    print("2) Obtener .wav a partir de un midi\n")
+    print("3) Ver el espectrograma de un audio\n")
+    print("4) Separar un .wav en su parte percusiva y su parte armonica\n")
+
 
 

@@ -4,13 +4,13 @@ import scipy.signal as sig
 from matplotlib import pyplot as plt
 MINIMUM_F= 1
 MAXIMUM_F = 3
-def BPM_estimate(buffer,f_s=44100,n_samples=280,alpha=0.8):
+def BPM_estimate(buffer,f_s=44100,n_samples=280,alpha=0.8,last_power=0):
     buffer_size = len(buffer)
     number_of_frames = math.ceil( buffer_size/n_samples )
     n_fft = int(number_of_frames)
     frame = buffer[0:n_samples]
     power = np.zeros(number_of_frames)
-    power[0] = (1-alpha)*(sig.fftconvolve(frame,frame[::-1])[0])
+    power[0] = alpha*last_power+ (1-alpha)*(sig.fftconvolve(frame,frame[::-1])[0])
     power[0] /= n_samples
     for i in range(1,number_of_frames):
         start_index = i*n_samples
@@ -34,5 +34,5 @@ def BPM_estimate(buffer,f_s=44100,n_samples=280,alpha=0.8):
     bin_max = bin_start + np.argmax(power_spectrum[bin_start:bin_stop])
     f_max = bin_max*freq_res
 
-    return (f_max*60)
+    return (f_max*60,power[-1])
 
