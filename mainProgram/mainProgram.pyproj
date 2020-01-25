@@ -20,6 +20,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="frontend.py" />
+    <Compile Include="HarmPercSeparation.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="main.py" />
     <Compile Include="midiBuilder.py" />
     <Compile Include="Midis\Midi_2_Score.py" />
@@ -27,6 +30,7 @@
     <Compile Include="PDA.py" />
     <Compile Include="Sampleador.py" />
     <Compile Include="segmentAlgorithms.py" />
+    <Compile Include="SpectrumSeparator.py" />
     <Compile Include="wav_gen.py" />
   </ItemGroup>
   <ItemGroup>
