@@ -41,7 +41,7 @@ def GetPercussiveAndHarmonicSpectrum(input,h_filter_len=15,p_filter_len=15,frame
     #Consigo los espectros y los antitransformo
     h_spectr = np.multiply( inp_spectr,Mask_h)
     p_spectr = np.multiply( inp_spectr,Mask_p)
-    t_h, audio_h = s.istft(h_spectr)
-    t_p, audio_p = s.istft(p_spectr)
+    t_h, audio_h = s.istft(h_spectr, nperseg = frame_size)
+    t_p, audio_p = s.istft(p_spectr, nperseg = frame_size)
     return t_h, audio_h, t_p, audio_p
 

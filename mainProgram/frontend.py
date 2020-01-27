@@ -4,10 +4,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 #Defines
-CREATE_MIDI = 1
-SYNTHESIZE_WAV = 2
-SPECTROGRAM = 3
-HARMONIC_PERCUSSIVE = 4
+CREATE_MIDI = '1'
+SYNTHESIZE_WAV = '2'
+SPECTROGRAM = '3'
+HARMONIC_PERCUSSIVE = '4'
 
 
 def showResults(notesName, noteSegments, audioMono):
@@ -29,7 +29,7 @@ def showResults(notesName, noteSegments, audioMono):
 def PrintInstructions():
     print("El siguiente programa tiene distintas funcionalidades todas relacionadas a la manipulacion de archivos\n")
     print("de audio .wav como de archivos MIDI.\n")
-    print("Eliga la opcion deseada apretando en el terclado el numero que precede a la misma:")
+    print("Eliga la opcion deseada apretando en el teclado el numero que precede a la misma:")
     #Listado de opciones que realiza el programa
     print("1) Obtener el midi a partir de un .wav\n")
     print("2) Obtener .wav a partir de un midi\n")
