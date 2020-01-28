@@ -7,17 +7,65 @@ import OSS_generator as tempo #esto probablemente haya que cambiarlo
 import frontend as front
 from midiBuilder import MidiBuilder
 import HarmPercSeparation as hp
+import GraphSpectrogram as gs
+import os
+
+AUDIO_PATH = ".\\Audios\\"
+
 #Funciones del main
+
+def isfloat(value):
+      try:
+        float(value)
+        return True
+      except ValueError:
+        return False
+
+#Valida que un string recibido sea un numero natural
+def IsValidNumber(arg):
+    if( isfloat(arg)): #valido el argumento
+        arg_f=float(arg)
+        if(arg_f<=0):
+            return ( "El numero ingresado debe ser positivo\n")
+        elif (arg_f==float("inf"))or(arg_f>=10e9):
+            return ("El numero ingresado debe tener un valor finito\n")
+
+    else:
+        return ("Error de sintaxis\n")
+
+    return "Ok" #El numero parece ser valido
+
+def GetWavFileFromUser():
+    valid = False
+    i=0
+    wav_dict = dict()
+    for file in os.listdir(AUDIO_PATH):
+        i +=1 
+        if file.endswith(".wav"):
+            print(str(i)+')'+file)
+            wav_dict[i] = file
+    while not valid:
+        num_str = input("Por favor seleccione el .wav deseado ingresando el numero previo al nombre\n")
+        result_str = IsValidNumber(num_str)
+        if(result_str =='Ok'):
+            num = int(num_str)
+            if (num in wav_dict):
+                valid =True
+                file_name =  wav_dict[num]
+        else:
+            valid = False
+            print(result_str)
+    return file_name
+
 def synthesize_wav():
     return
 def spectrogram():
     return
 def create_midi():
-    # obtengo el audio monofónico
-    AUDIO_PATH = ".\\Audios"
+    # obtengo el audio monofónico 
     INSTRUMENT = 1      # Grand Piano -- despues habria que agregar un diccionario si hace falta
     fileName = "punteoSongPiano"
-    filePath = AUDIO_PATH + "\\" + fileName + ".wav"
+    filePath = AUDIO_PATH + fileName + ".wav"
 
     fs, audio = wav.read(filePath)
     audioMono = audio[:, 1]
@@ -52,7 +100,8 @@ if(selected_option == front.CREATE_MIDI):
 elif( selected_option == front.SYNTHESIZE_WAV):
     synthesize_wav()
 elif( selected_option == front.SPECTROGRAM):
-    spectrogram()
+    file_name = GetWavFileFromUser()
+    gs.GraphSpectrogram( AUDIO_PATH + file_name)
 elif( selected_option == front.HARMONIC_PERCUSSIVE):
     hp.separate_harmonic_percussive()
 else:
