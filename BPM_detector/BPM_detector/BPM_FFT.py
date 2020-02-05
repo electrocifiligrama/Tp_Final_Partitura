@@ -4,35 +4,41 @@ import scipy.signal as sig
 from matplotlib import pyplot as plt
 MINIMUM_F= 1
 MAXIMUM_F = 3
-def BPM_estimate(buffer,f_s=44100,n_samples=280,alpha=0.8,last_power=0):
-    buffer_size = len(buffer)
-    number_of_frames = math.ceil( buffer_size/n_samples )
-    n_fft = int(number_of_frames)
-    frame = buffer[0:n_samples]
-    power = np.zeros(number_of_frames)
-    power[0] = alpha*last_power+ (1-alpha)*(sig.fftconvolve(frame,frame[::-1])[0])
-    power[0] /= n_samples
-    for i in range(1,number_of_frames):
-        start_index = i*n_samples
-        stop_index = (i+1)*n_samples
-        if stop_index >= len(buffer):
-            stop_index = -1
-        frame = buffer[start_index:stop_index]
-        #Calculo la potencia
-        frame_average = sig.fftconvolve(frame,frame[::-1])[0]
-        frame_average /= len(frame)
-        power[i] = alpha*(power[i-1]) + (1-alpha)*frame_average
-    fs_nueva = f_s/n_samples    
-    power_spectrum = np.abs( np.fft.rfft(power,n=n_fft) )
-    #f = np.linspace(start=0,stop=fs_nueva/2.0,num=len( power_spectrum))
-    #plt.plot(f,power_spectrum)
-    #plt.show()
-    rfft_size = len(power_spectrum)
-    freq_res = fs_nueva/(2*rfft_size)
-    bin_start = int( round(MINIMUM_F/freq_res) )
-    bin_stop = int( round(MAXIMUM_F/freq_res) )
-    bin_max = bin_start + np.argmax(power_spectrum[bin_start:bin_stop])
-    f_max = bin_max*freq_res
 
-    return (f_max*60,power[-1])
+class BPM_Detctor(object):
+    """Clase que se encarga de detectar el BPM de una cancion"""
+    def __init__(self, number_of_frames =2048):
+        self.power = np.zeros(number_of_frames)
+        self.nfft = number_of_frames
+        #Circular array indexes
+        self.curr = 0
+        self.overflow = False
+
+    def BPM_estimate(self, buffer,f_s=44100,alpha=0.8):
+        buffer_size = len(buffer)
+        frame = buffer
+        if( self.overflow):
+            self.power = np.delete(self.power,0)
+            self.power = np.append(self.power,0)
+        average = ( sig.fftconvolve(frame,frame[::-1])[0] )/ buffer_size
+        self.power[self.curr] = alpha*(self.power[self.curr - 1]) + (1-alpha)*average
+        fs_nueva = f_s/buffer_size    
+        power_spectrum = np.abs( np.fft.rfft(self.power,n=self.nfft) )
+        #f = np.linspace(start=0,stop=fs_nueva/2.0,num=len( power_spectrum))
+        #plt.plot(f,power_spectrum)
+        #plt.show()
+        rfft_size = len(power_spectrum)
+        freq_res = fs_nueva/(2*rfft_size)
+        bin_start = int( round(MINIMUM_F/freq_res) )
+        bin_stop = int( round(MAXIMUM_F/freq_res) )
+        bin_max = bin_start + np.argmax(power_spectrum[bin_start:bin_stop])
+        f_max = bin_max*freq_res
+
+        #Actualizo indices
+        if ( (self.curr + 1) == self.nfft ):
+            self.overflow = True
+        else:
+            self.curr = self.curr + 1
+
+        return (f_max*60)
 
