@@ -6,14 +6,14 @@ import BPM_FFT as b
 from scipy import stats
 AUDIO_PATH = ".\\Audios\\"
 
-file_name = "87_BPM_Monk.wav"
+file_name = "06-RunToTheHills.wav"
 file_path = AUDIO_PATH + file_name
 f_s, audio = wav.read(file_path)
 number_of_audios = 1
 if ( len(audio.shape) > 1):
     number_of_audios = 2
-samples = 375
-n_fft = 1024
+samples = 750
+n_fft = 2048
 alpha = 0.85
 bpm1 = [] #Bpm para el primer audio 
 bpm2 = [] #Bpm del segundo audio (Solo se utiliza para audios en stereo)
@@ -21,7 +21,7 @@ counter = 0
 bpm = 0
 detector = b.BPM_Detctor( n_fft, f_s, alpha )
 
-desired_time = 20 #Hasta que segundo de la cancion se quiere sacar el bpm
+desired_time = 35 #Hasta que segundo de la cancion se quiere sacar el bpm
 counter_limit = int( desired_time*f_s )
 
 while counter < counter_limit:
