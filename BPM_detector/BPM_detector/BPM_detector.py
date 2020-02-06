@@ -52,7 +52,7 @@ def run(file_path, file_name, samples=750, n_fft=2048, alpha=0.85, desired_time=
 # print(mode2[0])
 
 
-AUDIO_PATH = ".\\Audios\\"
-file_name = "06-RunToTheHills.wav"
-file_path = AUDIO_PATH + file_name
-run(file_path=file_path, file_name=file_name)
+# AUDIO_PATH = ".\\Audios\\"
+# file_name = "06-RunToTheHills.wav"
+# file_path = AUDIO_PATH + file_name
+# run(file_path=file_path, file_name=file_name)
